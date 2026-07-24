@@ -111,8 +111,8 @@ minio-data/
 # Dataset files should be managed by DVC
 # Do not commit large datasets
 
-data/raw/*
-data/processed/*
+# data/raw/*
+# data/processed/*
 
 # Keep directory structure
 !data/raw/.gitkeep
