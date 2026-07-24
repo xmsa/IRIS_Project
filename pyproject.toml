@@ -1,0 +1,44 @@
+[project]
+name = "iris-project"
+version = "0.1.0"
+description = "Production-style MLOps project demonstrating data versioning, experiment tracking, hyperparameter optimization, and reproducible ML pipelines."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "plotly",
+    "scikit-learn",
+    "xgboost",
+    "lightgbm",
+    "evidently",
+    "optuna",
+    "optuna-dashboard",
+    "mlflow",
+    "sqlalchemy",
+    "minio",
+    "dvc",
+    "dvc-s3",
+    "pyarrow",
+    "fastapi[standard]",
+    "uvicorn",
+    "streamlit",
+    "python-multipart",
+    "click",
+    "pydantic",
+    "pydantic-settings",
+    "tqdm",
+    "great-expectations",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "notebook",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+

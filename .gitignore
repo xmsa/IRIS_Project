@@ -1,0 +1,214 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Packaging
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.manifest
+*.spec
+
+
+# ============================================
+# Virtual Environment
+# ============================================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+
+# ============================================
+# Python Version Management
+# ============================================
+# Keep .python-version for reproducibility
+# .python-version
+
+
+# ============================================
+# UV
+# ============================================
+# Keep uv.lock for reproducible environments
+uv.lock
+
+
+# ============================================
+# VS Code
+# ============================================
+.vscode/*
+!.vscode/extensions.json
+
+*.code-workspace
+.history/
+
+
+# ============================================
+# MLOps Tools
+# ============================================
+
+# --------------------
+# DVC
+# --------------------
+.dvc/cache/
+.dvc/tmp/
+.dvc/lock
+.dvc/updater
+
+# Keep DVC configuration
+!.dvc/config
+!.dvc/.gitignore
+
+
+# --------------------
+# MLflow
+# --------------------
+mlruns/
+/mlartifacts/
+
+*.mlflow
+
+
+# --------------------
+# MinIO
+# --------------------
+.minio_data/
+minio-data/
+
+
+# ============================================
+# Model Artifacts
+# ============================================
+
+# Managed by MLflow/DVC
+*.pkl
+*.joblib
+*.h5
+*.pb
+*.pt
+*.pth
+*.onnx
+*.tflite
+
+# Allow small testing artifacts
+!tests/assets/*.pkl
+!tests/assets/*.joblib
+
+
+# ============================================
+# Data
+# ============================================
+
+# Dataset files should be managed by DVC
+# Do not commit large datasets
+
+data/raw/*
+data/processed/*
+
+# Keep directory structure
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+
+# ============================================
+# Jupyter
+# ============================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+.jupyter/
+
+
+# ============================================
+# Environment Variables
+# ============================================
+.env
+.env.local
+.env.*.local
+
+config.local.yml
+config.local.yaml
+
+
+# ============================================
+# Databases
+# ============================================
+
+# Runtime databases
+*.db
+*.sqlite
+*.sqlite3
+
+
+# ============================================
+# Operating System
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+
+
+# ============================================
+# Testing
+# ============================================
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyright/
+
+.coverage
+coverage.xml
+htmlcov/
+
+*.cover
+test-results/
+
+
+# ============================================
+# Reports
+# ============================================
+
+# Keep generated reports for portfolio
+# Ignore only temporary files
+
+reports/*/.cache/
+
+
+# ============================================
+# Temporary Files
+# ============================================
+
+tmp/
+temp/
+*.tmp
+.cache/
