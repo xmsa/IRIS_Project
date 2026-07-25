@@ -1,3 +1,5 @@
+from typing import List
+
 from minio import Minio
 from minio.error import S3Error
 
@@ -19,13 +21,18 @@ class MinIOStorage:
         )
 
     def __client_maker(self, settings: MinIOSettings) -> Minio:
-        client = Minio(
-            settings.endpoint,
-            access_key=settings.access_key,
-            secret_key=settings.get_secret_key,
-            secure=settings.secure
-        )
-        minio_logger.debug("MinIO client created successfully")
+        try:
+            client = Minio(
+                settings.endpoint,
+                access_key=settings.access_key,
+                secret_key=settings.get_secret_key,
+                secure=settings.secure
+            )
+            minio_logger.debug("MinIO client created successfully")
+        except Exception as e:
+            minio_logger.error(f"Failed to connect to MinIO: {e}")
+            raise e
+
         return client
 
     def setup_buckets(self) -> None:
@@ -67,6 +74,9 @@ class MinIOStorage:
                 exc_info=True
             )
             return False
+
+    def list_buckets(self) -> List:
+        return self.client.list_buckets()
 
 
 minio_storage = MinIOStorage()

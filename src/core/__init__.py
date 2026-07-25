@@ -1,3 +1,4 @@
+from .args_parser import cli
 from .logger import (
     api_logger,
     app_logger,
@@ -28,4 +29,5 @@ __all__: list[str] = [
     "api_logger",
     "database_logger",
     "minio_logger",
+    "cli"
 ]

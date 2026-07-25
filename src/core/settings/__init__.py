@@ -60,12 +60,18 @@ class Settings(Base):
             ]
         )
 
+    @property
+    def header(self) -> str:
+        header: str = (
+            f"📊 {self.project_name} V{self.version} "
+            f"(Python {self.python_version}, {self.environment.value})"
+        )
+        return header
+
     def summary(self) -> None:
         """Print a clean summary of all settings."""
         print(f"\n{'='*80}")
-        header: str = (f"📊 {self.project_name} V{self.version} "
-                       f"(Python {self.python_version}, {self.environment.value})")
-        print(f"{header:^80}")
+        print(f"{self.header:^80}")
 
         print(f"{'='*80}\n")
 
