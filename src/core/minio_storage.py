@@ -1,6 +1,7 @@
-from typing import List
+from typing import Iterator, List
 
 from minio import Minio
+from minio.datatypes import Bucket, Object
 from minio.error import S3Error
 
 from .logger import app_logger, minio_logger
@@ -21,6 +22,7 @@ class MinIOStorage:
         )
 
     def __client_maker(self, settings: MinIOSettings) -> Minio:
+        """Create and return MinIO client"""
         try:
             client = Minio(
                 settings.endpoint,
@@ -75,8 +77,61 @@ class MinIOStorage:
             )
             return False
 
-    def list_buckets(self) -> List:
-        return self.client.list_buckets()
+    def list_buckets(self) -> List[str]:
+        """List all buckets and return their names"""
+        try:
+            buckets: List[Bucket] = self.client.list_buckets()
+            bucket_names: List[str] = [bucket.name for bucket in buckets]
+            minio_logger.debug(f"Found {len(bucket_names)} buckets")
+            return bucket_names
+        except S3Error as e:
+            minio_logger.error(f"Failed to list buckets: {e}", exc_info=True)
+            return []
+
+    def check_connection(self) -> bool:
+        """Check if MinIO connection is working"""
+        try:
+            # Try to list buckets as a connection test
+            self.client.list_buckets()
+            minio_logger.info("✅ MinIO connection check successful")
+            return True
+        except Exception as e:
+            minio_logger.error(f"❌ MinIO connection check failed: {e}")
+            return False
+
+    def delete_bucket(self, bucket_name: str, force: bool = False) -> bool:
+        """
+        Delete a bucket
+
+        Args:
+            bucket_name: Name of the bucket to delete
+            force: If True, delete all objects in bucket first
+        """
+        if not self.bucket_exists(bucket_name):
+            app_logger.warning(f"Bucket '{bucket_name}' does not exist")
+            return False
+
+        try:
+            if force:
+                # Delete all objects in bucket first
+                objects: Iterator[Object] = self.client.list_objects(
+                    bucket_name, recursive=True)
+                for obj in objects:
+                    if obj.object_name is None:
+                        continue
+                    self.client.remove_object(bucket_name, obj.object_name)
+                app_logger.info(
+                    f"🗑️  Removed all objects from bucket '{bucket_name}'")
+
+            self.client.remove_bucket(bucket_name)
+            app_logger.info(f"🗑️  Bucket deleted: {bucket_name}")
+            return True
+        except S3Error as e:
+            minio_logger.error(
+                f"Failed to delete bucket '{bucket_name}': {e}",
+                exc_info=True
+            )
+            return False
 
 
 minio_storage = MinIOStorage()
