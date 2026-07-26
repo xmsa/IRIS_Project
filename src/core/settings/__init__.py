@@ -9,6 +9,7 @@ from .api import APISettings
 from .base import ENV_PATH, Base
 from .logger import LogsSettings
 from .minio import MinIOSettings
+from .mlflow import MlflowSettings
 from .paths import PathsSettings
 from .storage import StorageSettings
 
@@ -30,6 +31,7 @@ class Settings(Base):
     api: APISettings = Field(default_factory=APISettings)
     logger: LogsSettings = Field(default_factory=LogsSettings)
     storage: StorageSettings = Field(default_factory=StorageSettings)
+    mlflow: MlflowSettings = Field(default_factory=MlflowSettings)
 
     model_config = SettingsConfigDict(
         env_file=ENV_PATH,
@@ -52,6 +54,13 @@ class Settings(Base):
 
         if self.storage.filepath is None:
             self.storage.filepath = self.paths.main_db
+
+        if self.mlflow.filepath is None:
+            self.mlflow.filepath = self.paths.mlflow_db
+        if self.mlflow.artifact_uri is None:
+            self.mlflow.artifact_uri = self.minio.endpoint_url
+        if self.mlflow.s3_endpoint_url is None:
+            self.mlflow.s3_endpoint_url = self.minio.mlflow_artifact_bucket
 
         self.paths.create_directories()
         self.paths.create_directories(
@@ -80,6 +89,7 @@ class Settings(Base):
         self.api._summary()
         self.logger._summary()
         self.storage._summary()
+        self.mlflow._summary()
 
         print(f"{'='*80}\n")
 
@@ -90,3 +100,4 @@ minio_settings: MinIOSettings = settings.minio
 api_settings: APISettings = settings.api
 logger_settings: LogsSettings = settings.logger
 storage_settings: StorageSettings = settings.storage
+mlflow_settings: MlflowSettings = settings.mlflow
