@@ -1,6 +1,6 @@
 from pathlib import Path
+from typing import Optional
 
-from git import Optional
 from pydantic import computed_field
 
 from .base import Base
@@ -15,7 +15,7 @@ class StorageSettings(Base):
         """
         SQLite database connection URI.
         Example:
-            sqlite:///databases/optuna.db
+            sqlite:///storage/application.db
         """
         return f"sqlite:///{self.filepath}"
 
