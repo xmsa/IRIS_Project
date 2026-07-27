@@ -1,14 +1,35 @@
 import logging
 from enum import Enum
+from typing import Dict, Optional
+
+from sklearn.preprocessing import (
+    LabelEncoder,
+    MinMaxScaler,
+    OneHotEncoder,
+    RobustScaler,
+    StandardScaler,
+)
+
+from .types import EncoderType, ScalerType
 
 
-class EnvironmentEnum(str, Enum):
+class BaseEnum(str, Enum):
+    @classmethod
+    def from_string(cls, value: str) -> "BaseEnum":
+        value_lower: str = value.lower()
+        for member in cls:
+            if member.value == value_lower:
+                return member
+        raise ValueError(f"Unknown value: {value}")
+
+
+class EnvironmentEnum(BaseEnum):
     DEVELOPMENT = "development"
     TESTING = "testing"
     PRODUCTION = "production"
 
 
-class LogCategory(str, Enum):
+class LogCategory(BaseEnum):
     APPLICATION = "Application"
     API = "API"
     DATABASE = "Database"
@@ -17,7 +38,7 @@ class LogCategory(str, Enum):
     MLFLOW = "Mlflow"
 
 
-class LogLevel(str, Enum):
+class LogLevel(BaseEnum):
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -33,3 +54,45 @@ class LogLevel(str, Enum):
             self.ERROR: logging.ERROR,
             self.CRITICAL: logging.CRITICAL,
         }[self]
+
+
+class DatasetEnum(BaseEnum):
+    TRAIN = "Train"
+    TEST = "Test"
+    VAL = "Val"
+
+
+class ScalerEnum(BaseEnum):
+    STANDARD = "standard"
+    MINMAX = "minmax"
+    ROBUST = "robust"
+
+    def get_scaler(self, **kwargs) -> ScalerType:
+        scalers: Dict = {
+            ScalerEnum.STANDARD: StandardScaler,
+            ScalerEnum.MINMAX: MinMaxScaler,
+            ScalerEnum.ROBUST: RobustScaler,
+        }
+
+        scaler_class: Optional[ScalerType] = scalers.get(self)
+        if scaler_class is None:
+            raise ValueError(f"Unknown scaler type: {self}")
+
+        return scaler_class(**kwargs)
+
+
+class EncoderEnum(BaseEnum):
+    LABEL = "label"
+    ONEHOT = "onehot"
+
+    def get_encoder(self, **kwargs) -> EncoderType:
+        encoder: Dict = {
+            EncoderEnum.LABEL: LabelEncoder,
+            EncoderEnum.ONEHOT: OneHotEncoder,
+        }
+
+        scaler_class: Optional[EncoderType] = encoder.get(self)
+        if scaler_class is None:
+            raise ValueError(f"Unknown scaler type: {self}")
+
+        return scaler_class(**kwargs)

@@ -1,0 +1,17 @@
+scaler:
+  name: "standard_sc"
+  type: "standard" #  "minmax"
+  use_cols: [] # use dataset.numerical_columns if not set
+  params: {}
+    # feature_range: [0, 1]
+encoder:
+  name: "encoder_sc"
+  type: "onehot" #  "label"
+  use_cols: [] # use dataset.categorical_columns if not set
+  params: {}
+
+# train/test split
+split_data: true
+shuffle_data: true
+test_size: 0.2
+random_state: 42

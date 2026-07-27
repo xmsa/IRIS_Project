@@ -1,0 +1,23 @@
+version: "v1"
+name: "iris"
+filetype: "csv"
+description: "This data sets consists of 3 different types of irises' (Setosa, Versicolour, and Virginica) petal and sepal length, stored in a 150x4 numpy.ndarray"
+
+feature_columns:
+  - "sepal_length"
+  - "sepal_width"
+  - "petal_length"
+  - "petal_width"
+
+hash: "4224576f0267bf88902f87f0f6200967"
+
+target_column: "target"
+
+categorical_columns:
+  - "target"
+
+numerical_columns:
+  - "sepal_length"
+  - "sepal_width"
+  - "petal_length"
+  - "petal_width"
