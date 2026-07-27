@@ -1,6 +1,7 @@
+import json
 from functools import wraps
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict
 
 import yaml
 
@@ -59,7 +60,26 @@ class FileWriter:
             )
 
         status: str = "overwritten" if overwrite else "saved"
-        app_logger.info(f"Json file {status}: {filepath}")
+        app_logger.info(f"Yaml file {status}: {filepath}")
+
+    @staticmethod
+    @convert_str2path
+    @FileValidator.check_exists_file(exists=False, allow_overwrite=False)
+    def json(
+        filepath: Path,
+        content: dict[str, Any],
+        overwrite: bool = False,
+        indent: int = 2,
+    ) -> None:
+        with filepath.open("w", encoding="utf-8") as f:
+            json.dump(
+                content, f,
+                ensure_ascii=False,
+                indent=indent,
+            )
+
+        status: str = "overwritten" if overwrite else "saved"
+        app_logger.info(f"JSON file {status}: {filepath}")
 
 
 class FileReader:
@@ -68,7 +88,17 @@ class FileReader:
     @FileValidator.check_exists_file(exists=True)
     def yaml(filepath: Path) -> Dict:
         with open(filepath, 'r', encoding='utf-8') as f:
-            content = yaml.safe_load(f)
+            content: Dict = yaml.safe_load(f)
             app_logger.info(f"Yaml file loaded: {filepath}")
+
+        return content
+
+    @staticmethod
+    @convert_str2path
+    @FileValidator.check_exists_file(exists=True)
+    def json(filepath: Path) -> Dict:
+        with filepath.open("r", encoding="utf-8") as f:
+            content: Dict = json.load(f)
+            app_logger.info("JSON file loaded: %s", filepath)
 
         return content
