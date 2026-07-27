@@ -92,6 +92,7 @@ class Logger:
         self.database: Default_Logger = logger_factory.get(
             LogCategory.DATABASE)
         self.minio: Default_Logger = logger_factory.get(LogCategory.MINIO)
+        self.mlflow: Default_Logger = logger_factory.get(LogCategory.MLFLOW)
 
 
 logger = Logger()
@@ -100,3 +101,4 @@ report_logger: Default_Logger = logger.report
 api_logger: Default_Logger = logger.api
 database_logger: Default_Logger = logger.database
 minio_logger: Default_Logger = logger.minio
+mlflow_logger: Default_Logger = logger.mlflow

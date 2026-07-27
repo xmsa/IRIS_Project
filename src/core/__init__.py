@@ -5,6 +5,7 @@ from .logger import (
     database_logger,
     logger,
     minio_logger,
+    mlflow_logger,
     report_logger,
 )
 from .settings import (
@@ -31,5 +32,6 @@ __all__: list[str] = [
     "api_logger",
     "database_logger",
     "minio_logger",
+    "mlflow_logger",
     "cli"
 ]

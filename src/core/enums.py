@@ -14,6 +14,7 @@ class LogCategory(str, Enum):
     DATABASE = "Database"
     REPORT = "Report"
     MINIO = "MinIO"
+    MLFLOW = "Mlflow"
 
 
 class LogLevel(str, Enum):
