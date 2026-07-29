@@ -149,7 +149,7 @@ class ScalerConfigSchema(BaseConfigModel):
 
     @property
     def filename(self) -> str:
-        return f"{self.name}_{self.type.value}_{self.version}"
+        return f"{self.type.value}_{self.name}_{self.version}"
 
 
 class EncoderConfigSchema(BaseConfigModel):
@@ -194,7 +194,7 @@ class EncoderConfigSchema(BaseConfigModel):
 
     @property
     def filename(self) -> str:
-        return f"{self.name}_{self.type.value}_{self.version}"
+        return f"{self.type.value}_{self.name}_{self.version}"
 
 
 class PreprocessingConfigSchema(BaseConfigModel):

@@ -128,6 +128,34 @@ class PathsSettings(Base):
         examples=["application.db"],
     )
 
+    artifacts_dir_name: str = Field(
+        default="artifacts",
+        title="Artifacts Directory Name",
+        description="Name of the root directory where all model artifacts (models, scalers, encoders, etc.) are stored.",
+        examples=["artifacts"],
+    )
+
+    model_artifact_dir_name: str = Field(
+        default="models",
+        title="Model Artifact Directory Name",
+        description="Name of the subdirectory within the artifacts directory where trained model files are saved.",
+        examples=["models"],
+    )
+
+    scaler_artifact_dir_name: str = Field(
+        default="scaler",
+        title="Scaler Artifact Directory Name",
+        description="Name of the subdirectory within the artifacts directory where fitted scaler objects (e.g., StandardScaler, MinMaxScaler) are stored.",
+        examples=["scaler"],
+    )
+
+    encoder_artifact_dir_name: str = Field(
+        default="encoder",
+        title="Encoder Artifact Directory Name",
+        description="Name of the subdirectory within the artifacts directory where fitted encoder objects (e.g., LabelEncoder, OneHotEncoder) are stored.",
+        examples=["encoder"],
+    )
+
     @computed_field
     @property
     def logger_dir(self) -> Path:
@@ -209,6 +237,28 @@ class PathsSettings(Base):
     def main_db(self) -> Path:
         return self.storage_dir / self.main_db_name
 
+    # ----- Artifacts -----
+
+    @computed_field
+    @property
+    def artifacts_dir(self) -> Path:
+        return self.root_dir / self.artifacts_dir_name
+
+    @computed_field
+    @property
+    def model_artifact_dir(self) -> Path:
+        return self.artifacts_dir / self.model_artifact_dir_name
+
+    @computed_field
+    @property
+    def scaler_artifact_dir(self) -> Path:
+        return self.artifacts_dir / self.scaler_artifact_dir_name
+
+    @computed_field
+    @property
+    def encoder_artifact_dir(self) -> Path:
+        return self.artifacts_dir / self.encoder_artifact_dir_name
+
     # ----- Helpers -----
 
     @property
@@ -226,6 +276,10 @@ class PathsSettings(Base):
             self.gx_reports_dir,
             self.optuna_reports_dir,
             self.storage_dir,
+            self.artifacts_dir,
+            self.model_artifact_dir,
+            self.scaler_artifact_dir,
+            self.encoder_artifact_dir,
         ]
 
     def create_directories(self, dirs: Optional[List[Path]] = None) -> None:
@@ -252,6 +306,10 @@ class PathsSettings(Base):
         print(f"    ├── DATA:             {self.data_dir_name}/")
         print(f"    │     ├── PROCESSED:  {self.processed_dir_name}/")
         print(f"    │     └── RAW:        {self.raw_dir_name}/")
+        print(f"    ├── ARTIFACTS:        {self.artifacts_dir_name}/")
+        print(f"    │     ├── MODELS:     {self.model_artifact_dir_name}/")
+        print(f"    │     ├── SCALER:     {self.scaler_artifact_dir_name}/")
+        print(f"    │     └── ENCODER:    {self.encoder_artifact_dir_name}/")
         print(f"    ├── DATABASES:        {self.storage_dir_name}/")
         print(f"    │     ├── Mlflow:     {self.mlflow_db_name}")
         print(f"    │     ├── Optuna:     {self.optuna_db_name}")

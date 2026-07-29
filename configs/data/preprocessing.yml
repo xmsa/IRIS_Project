@@ -1,11 +1,11 @@
 scaler:
-  name: "standard_sc"
+  name: "scaler"
   type: "standard" #  "minmax"
   use_cols: [] # use dataset.numerical_columns if not set
   params: {}
     # feature_range: [0, 1]
 encoder:
-  name: "encoder_sc"
+  name: "encoder"
   type: "onehot" #  "label"
   use_cols: [] # use dataset.categorical_columns if not set
   params: {}

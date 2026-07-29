@@ -67,7 +67,7 @@ class ScalerEnum(BaseEnum):
     MINMAX = "minmax"
     ROBUST = "robust"
 
-    def get_scaler(self, **kwargs) -> ScalerType:
+    def get(self, **kwargs) -> ScalerType:
         scalers: Dict = {
             ScalerEnum.STANDARD: StandardScaler,
             ScalerEnum.MINMAX: MinMaxScaler,
@@ -85,7 +85,7 @@ class EncoderEnum(BaseEnum):
     LABEL = "label"
     ONEHOT = "onehot"
 
-    def get_encoder(self, **kwargs) -> EncoderType:
+    def get(self, **kwargs) -> EncoderType:
         encoder: Dict = {
             EncoderEnum.LABEL: LabelEncoder,
             EncoderEnum.ONEHOT: OneHotEncoder,
