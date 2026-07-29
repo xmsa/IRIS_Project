@@ -16,3 +16,13 @@ class DVCError(VersionControlError):
 
 class DatasetHashMismatchError(Exception):
     """Raised when the dataset hash does not match the expected hash."""
+
+
+class NotSupportFormatException(Exception):
+    """
+    Exception raised when the dataset format is not supported or path is invalid.
+    """
+
+    def __init__(self, message: str = "Dataset format not supported or path is invalid") -> None:
+        self.message: str = message
+        super().__init__(self.message)
