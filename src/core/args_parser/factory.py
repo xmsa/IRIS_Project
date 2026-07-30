@@ -5,6 +5,7 @@ import click
 from .api import ApiCommand
 from .app import AppCommand
 from .base import BaseCommand
+from .data import DataCommand
 from .minio import MinioCommand
 from .storage import StorageCommand
 
@@ -24,6 +25,7 @@ class CLI:
             'api': ApiCommand(),
             'minio': MinioCommand(),
             'storage': StorageCommand(),
+            'data': DataCommand(),
         }
 
         for name, command in commands.items():
