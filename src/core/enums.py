@@ -10,6 +10,7 @@ from sklearn.preprocessing import (
     StandardScaler,
 )
 
+from .exceptions import NotSupportModelException
 from .types import EncoderType, ScalerType
 
 
@@ -82,7 +83,7 @@ class ScalerEnum(BaseEnum):
 
         scaler_class: Optional[ScalerType] = scalers.get(self)
         if scaler_class is None:
-            raise ValueError(f"Unknown scaler type: {self}")
+            raise NotSupportModelException("Scaler")
 
         return scaler_class(**kwargs)
 
@@ -99,6 +100,6 @@ class EncoderEnum(BaseEnum):
 
         scaler_class: Optional[EncoderType] = encoder.get(self)
         if scaler_class is None:
-            raise ValueError(f"Unknown scaler type: {self}")
+            raise NotSupportModelException("Encoder")
 
         return scaler_class(**kwargs)

@@ -44,3 +44,9 @@ class CustomAttributeError(AttributeError):
     def __init__(self, attribute,  file):
         msg: str = f"Object of type {file} does not have '{attribute}' attribute"
         super().__init__(msg)
+
+
+class NotSupportModelException(Exception):
+    def __init__(self, model: str = "Model"):
+        message: str = f"{model} format not supported"
+        super().__init__(message.format(Model=model))
