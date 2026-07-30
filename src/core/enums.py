@@ -62,6 +62,11 @@ class DatasetEnum(BaseEnum):
     VAL = "Val"
 
 
+class ArtifactSourceEnum(BaseEnum):
+    MLFLOW = "mlflow"
+    LOCAL = "local"
+
+
 class ScalerEnum(BaseEnum):
     STANDARD = "standard"
     MINMAX = "minmax"

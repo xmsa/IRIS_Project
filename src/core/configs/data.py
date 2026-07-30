@@ -1,10 +1,13 @@
 
 from pathlib import Path
 
+from core.enums import EncoderEnum
 from core.settings import paths_settings
 from schemas.data import (
     DatasetConfigSchema,
+    EncoderConfigSchema,
     PreprocessingConfigSchema,
+    ScalerConfigSchema,
 )
 
 
@@ -18,10 +21,43 @@ class DataConfigs:
         self.preprocessing: PreprocessingConfigSchema = PreprocessingConfigSchema.from_yaml(
             preprocessing_config_path)
 
-        if not self.preprocessing.scaler.use_cols:
-            self.preprocessing.scaler.use_cols = self.dataset.numerical_columns
-        if not self.preprocessing.encoder.use_cols:
-            self.preprocessing.encoder.use_cols = self.dataset.categorical_columns
+        self.scaler_configs: ScalerConfigSchema = self.preprocessing.scaler
+        self.encoder_configs: EncoderConfigSchema = self.preprocessing.encoder
+
+        if not self.scaler_configs.use_cols:
+            self.scaler_configs.use_cols = self.dataset.numerical_columns
+        if not self.encoder_configs.use_cols:
+            self.encoder_configs.use_cols = self.dataset.categorical_columns
+
+        if self.scaler_configs.filepath is None:
+            self.scaler_configs.filepath = self.scaler_filepath
+        if self.encoder_configs.filepath is None:
+            self.encoder_configs.filepath = self.encoder_filepath
+
+        if self.encoder_configs.type == EncoderEnum.ONEHOT:
+            self.encoder_configs.params["sparse_output"] = False
+
+        if self.scaler_configs.metadata == dict():
+
+            self.scaler_configs.metadata = {
+                "type": self.scaler_configs.type,
+                "dataset_version": self.dataset.version,
+                "dataset_hash": self.dataset.hash,
+                "params": self.scaler_configs.params,
+                "use_cols": self.scaler_configs.use_cols,
+                "version": self.scaler_configs.version,
+            }
+
+        if self.encoder_configs.metadata == dict():
+
+            self.encoder_configs.metadata = {
+                "type": self.encoder_configs.type,
+                "dataset_version": self.dataset.version,
+                "dataset_hash": self.dataset.hash,
+                "params": self.encoder_configs.params,
+                "use_cols": self.encoder_configs.use_cols,
+                "version": self.encoder_configs.version,
+            }
 
     @property
     def encoder_filepath(self) -> Path:
