@@ -60,6 +60,7 @@ class DatasetEnum(BaseEnum):
     TRAIN = "Train"
     TEST = "Test"
     VAL = "Val"
+    PREDICTOR = "Pred"
 
 
 class ArtifactSourceEnum(BaseEnum):
