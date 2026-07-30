@@ -5,11 +5,11 @@ from numpy import ndarray
 from pandas import DataFrame
 from pandas.api.types import is_numeric_dtype
 
-from core import app_logger
 from core.configs import dataset_config
 from core.decorators import ensure_dependencies
 from core.enums import DatasetEnum
 from core.exceptions import NotFitError
+from core.logger import app_logger
 from schemas.data import DatasetSplitSchema
 
 from .loader import DataLoader

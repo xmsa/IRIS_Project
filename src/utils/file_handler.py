@@ -1,4 +1,3 @@
-from core.decorators import check_exists
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -7,7 +6,8 @@ from typing import Any, Dict, Optional, Tuple
 import skops.io as sio
 import yaml
 
-from core import app_logger
+from core.decorators import check_exists
+from core.logger import app_logger
 from core.types import SkopsObjectType
 
 

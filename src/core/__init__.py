@@ -1,13 +1,5 @@
 from .args_parser import cli
-from .logger import (
-    api_logger,
-    app_logger,
-    database_logger,
-    logger,
-    minio_logger,
-    mlflow_logger,
-    report_logger,
-)
+from .logger import logger
 from .settings import (
     api_settings,
     logger_settings,
@@ -27,11 +19,5 @@ __all__: list[str] = [
     "storage_settings",
     "mlflow_settings",
     "logger",
-    "app_logger",
-    "report_logger",
-    "api_logger",
-    "database_logger",
-    "minio_logger",
-    "mlflow_logger",
     "cli"
 ]

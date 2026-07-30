@@ -3,8 +3,8 @@ from pathlib import Path
 import pandas as pd
 from pandas import DataFrame
 
-from core import app_logger
 from core.exceptions import NotSupportFormatException
+from core.logger import app_logger
 
 
 class DataLoader:

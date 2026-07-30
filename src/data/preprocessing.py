@@ -6,7 +6,6 @@ from numpy import ndarray
 from pandas import DataFrame, Series
 from sklearn.model_selection import train_test_split
 
-from core import app_logger
 from core.configs import (
     data_encoder_configs,
     data_preprocessing_configs,
@@ -15,6 +14,7 @@ from core.configs import (
 )
 from core.decorators import dataframe_to_numpy, require_fit
 from core.enums import ArtifactSourceEnum, DatasetEnum
+from core.logger import app_logger
 from core.types import ProcessorType
 from schemas.data import (
     DatasetConfigSchema,
