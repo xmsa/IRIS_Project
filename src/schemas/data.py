@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TypeAlias, Union
 
 import numpy as np
 from numpy import ndarray
@@ -270,6 +270,12 @@ class EncoderConfigSchema(BaseConfigModel):
     @property
     def filename(self) -> str:
         return f"{self.type.value}_{self.name}_{self.version}"
+
+
+TransformerSchemaType: TypeAlias = Union[
+    ScalerConfigSchema,
+    EncoderConfigSchema
+]
 
 
 class PreprocessingConfigSchema(BaseConfigModel):
