@@ -1,0 +1,5 @@
+outs:
+- md5: 82adfcfbb8a603fe57708fc2cb7f7ee4
+  size: 5028
+  hash: md5
+  path: standard_scaler_v1_data_v1.skops
