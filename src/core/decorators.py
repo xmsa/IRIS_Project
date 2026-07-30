@@ -1,6 +1,6 @@
 
-from functools import _Wrapped, wraps
-from typing import Any, Callable
+from functools import wraps
+from typing import Any, Callable, Dict, Type
 
 import numpy as np
 from numpy import ndarray
@@ -10,7 +10,7 @@ from .enums import EncoderEnum
 from .exceptions import CustomAttributeError, FittedError, NotFitError
 
 
-def dataframe_to_numpy(func) -> _Wrapped:
+def dataframe_to_numpy(func):
     @wraps(func)
     def wrapper(self, data: DataFrame | ndarray | Series, *args, **kwargs) -> ndarray:
         if isinstance(data, Series) and self.configs.type == EncoderEnum.ONEHOT:
@@ -24,7 +24,7 @@ def dataframe_to_numpy(func) -> _Wrapped:
 
 
 def require_fit(fitted=True) -> Callable:
-    def decorator(func) -> _Wrapped:
+    def decorator(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs) -> Any:
             if not hasattr(self, '_is_fit'):
@@ -38,6 +38,30 @@ def require_fit(fitted=True) -> Callable:
                 raise NotFitError(_type)
             elif not fitted and self._is_fit:
                 raise FittedError(_type)
+            return func(self, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def ensure_dependencies(deps: Dict[str, Type]) -> Callable:
+    """
+    Ensure required dependencies are initialized.
+
+    Args:
+        deps: Dictionary mapping attribute names to class types
+              e.g., {'scaler': Scaler, 'encoder': Encoder}
+
+    Example:
+        @ensure_dependencies({'scaler': Scaler, 'encoder': Encoder})
+        def process(self, data):
+            self.scaler.transform(data)
+    """
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(self, *args, **kwargs) -> Any:
+            for attr_name, class_type in deps.items():
+                if getattr(self, attr_name, None) is None:
+                    setattr(self, attr_name, class_type())
             return func(self, *args, **kwargs)
         return wrapper
     return decorator
