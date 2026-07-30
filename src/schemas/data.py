@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TypeAlias, Union
 
 import numpy as np
 from numpy import ndarray
 from pydantic import ConfigDict, Field
 
-from core.enums import DatasetEnum, EncoderEnum, ScalerEnum
+from core.enums import ArtifactSourceEnum, DatasetEnum, EncoderEnum, ScalerEnum
 from core.exceptions import DatasetHashMismatchError
 from core.settings import paths_settings
 from utils.version_control import VersionControl
@@ -126,7 +126,11 @@ class ScalerConfigSchema(BaseConfigModel):
         default_factory=dict,
         title="Scaler Parameters",
         description="Additional keyword arguments passed to the scaler.",
-        examples=[{"with_mean": True, "with_std": True}],
+        examples=[
+            {"with_mean": True, "with_std": True},
+            {"feature_range": [0, 1]}
+        ],
+
     )
 
     use_cols: List[str] = Field(
@@ -135,7 +139,12 @@ class ScalerConfigSchema(BaseConfigModel):
         description="Columns that should be scaled.",
         examples=[
             ["age", "salary"],
-            []
+            [
+                "sepal_length",
+                "sepal_width",
+                "petal_length",
+                "petal_width",
+            ]
         ],
     )
 
@@ -147,9 +156,41 @@ class ScalerConfigSchema(BaseConfigModel):
         examples=["v1"],
     )
 
+    filepath: Optional[Path] = Field(
+        default=None,
+        title="Scaler file path(skops format)",
+        description="Path to the scaler file (e.g., StandardScaler, MinMaxScaler) for loading or saving",
+        examples=["./artifacts/scaler/<name>.skops"],
+    )
+
+    metadata: Dict = Field(
+        default_factory=dict,
+        title="Scaler metadata",
+        description="Additional metadata for the scaler including parameters, features, and statistics",
+        examples=[
+            {
+                # for MinMaxScaler
+                "type": "minmax",
+                "dataset_version": "dataset_version",
+                "dataset_hash": "Dataset Hash",
+                "version": "Scaler version",
+                "params": {
+                    "feature_range": [0, 1]
+                },
+                "use_cols": [
+                    "sepal_length",
+                    "sepal_width",
+                    "petal_length",
+                    "petal_width",
+                ],
+            }
+        ]
+
+    )
+
     @property
     def filename(self) -> str:
-        return f"{self.name}_{self.type.value}_{self.version}"
+        return f"{self.type.value}_{self.name}_{self.version}"
 
 
 class EncoderConfigSchema(BaseConfigModel):
@@ -174,14 +215,21 @@ class EncoderConfigSchema(BaseConfigModel):
         default_factory=dict,
         title="Encoder Parameters",
         description="Additional keyword arguments passed to the encoder.",
-        examples=[{}],
+        examples=[
+            {
+                "sparse_output": False,  # use for onehot
+            }
+        ],
     )
 
     use_cols: List[str] = Field(
         default_factory=list,
         title="Encoder Columns",
         description="Columns that should be encoded.",
-        examples=[["gender", "city"]],
+        examples=[
+            ["gender", "city"],
+            ["target"]
+        ],
     )
 
     version: str = Field(
@@ -192,9 +240,42 @@ class EncoderConfigSchema(BaseConfigModel):
         examples=["v1"],
     )
 
+    metadata: Dict = Field(
+        default_factory=dict,
+        title="Encoder metadata",
+        description="Additional metadata for the encoder including parameters, features, and statistics",
+        examples=[
+            {
+                # for Encoder
+                "type": "onehot",
+                "dataset_version": "dataset_version",
+                "dataset_hash": "Dataset Hash",
+                "version": "Encoder version",
+                "params": {
+                    "sparse_output": False
+                },
+                "use_cols": ["target"],
+            }
+        ]
+    )
+
+    filepath: Optional[Path] = Field(
+        default=None,
+        min_length=1,
+        title="Encoder file path(Skops file)",
+        description="Path to the encoder file (e.g., LabelEncoder, OneHotEncoder) for loading or saving",
+        examples=["./artifacts/encoder/<name>.skops"],
+    )
+
     @property
     def filename(self) -> str:
-        return f"{self.name}_{self.type.value}_{self.version}"
+        return f"{self.type.value}_{self.name}_{self.version}"
+
+
+TransformerSchemaType: TypeAlias = Union[
+    ScalerConfigSchema,
+    EncoderConfigSchema
+]
 
 
 class PreprocessingConfigSchema(BaseConfigModel):
@@ -210,6 +291,15 @@ class PreprocessingConfigSchema(BaseConfigModel):
         ...,
         title="Encoder Configuration",
         description="Configuration used for categorical encoding.",
+    )
+    artifact_source: ArtifactSourceEnum = Field(
+        default=ArtifactSourceEnum.LOCAL,
+        title="Artifact Source",
+        description=(
+            "Specifies where preprocessing artifacts such as encoders and scalers "
+            "are loaded from."
+        ),
+        examples=["local"],
     )
 
     split_data: bool = Field(

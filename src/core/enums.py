@@ -10,6 +10,7 @@ from sklearn.preprocessing import (
     StandardScaler,
 )
 
+from .exceptions import NotSupportModelException
 from .types import EncoderType, ScalerType
 
 
@@ -60,6 +61,12 @@ class DatasetEnum(BaseEnum):
     TRAIN = "Train"
     TEST = "Test"
     VAL = "Val"
+    PREDICTOR = "Pred"
+
+
+class ArtifactSourceEnum(BaseEnum):
+    MLFLOW = "mlflow"
+    LOCAL = "local"
 
 
 class ScalerEnum(BaseEnum):
@@ -67,7 +74,7 @@ class ScalerEnum(BaseEnum):
     MINMAX = "minmax"
     ROBUST = "robust"
 
-    def get_scaler(self, **kwargs) -> ScalerType:
+    def get(self, **kwargs) -> ScalerType:
         scalers: Dict = {
             ScalerEnum.STANDARD: StandardScaler,
             ScalerEnum.MINMAX: MinMaxScaler,
@@ -76,7 +83,7 @@ class ScalerEnum(BaseEnum):
 
         scaler_class: Optional[ScalerType] = scalers.get(self)
         if scaler_class is None:
-            raise ValueError(f"Unknown scaler type: {self}")
+            raise NotSupportModelException("Scaler")
 
         return scaler_class(**kwargs)
 
@@ -85,7 +92,7 @@ class EncoderEnum(BaseEnum):
     LABEL = "label"
     ONEHOT = "onehot"
 
-    def get_encoder(self, **kwargs) -> EncoderType:
+    def get(self, **kwargs) -> EncoderType:
         encoder: Dict = {
             EncoderEnum.LABEL: LabelEncoder,
             EncoderEnum.ONEHOT: OneHotEncoder,
@@ -93,6 +100,6 @@ class EncoderEnum(BaseEnum):
 
         scaler_class: Optional[EncoderType] = encoder.get(self)
         if scaler_class is None:
-            raise ValueError(f"Unknown scaler type: {self}")
+            raise NotSupportModelException("Encoder")
 
         return scaler_class(**kwargs)
