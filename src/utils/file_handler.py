@@ -1,8 +1,8 @@
+from core.decorators import check_exists
 import json
 from dataclasses import dataclass
-from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 import skops.io as sio
 import yaml
@@ -21,28 +21,6 @@ class FileValidator:
     @staticmethod
     def get_size_mb(filepath: Path) -> float:
         return filepath.stat().st_size / (1024 * 1024) if filepath.exists() else 0.0
-
-    @staticmethod
-    def check_exists(exists: bool = True, allow_overwrite: bool = False):
-        """Decorator to validate file existence before operations."""
-        def decorator(func: Callable) -> Callable:
-            @wraps(func)
-            def wrapper(filepath: Union[str, Path], *args, **kwargs) -> Any:
-                path = Path(filepath) if isinstance(
-                    filepath, str) else filepath
-                overwrite = kwargs.get('overwrite', allow_overwrite)
-
-                if overwrite:
-                    return func(path, *args, **kwargs)
-
-                if exists and not path.exists():
-                    raise FileNotFoundError(f"File not found: {path}")
-                if not exists and path.exists():
-                    raise FileExistsError(f"File already exists: {path}")
-
-                return func(path, *args, **kwargs)
-            return wrapper
-        return decorator
 
     @staticmethod
     def metadata_checker(metadata: Dict, config: Dict,  ordered_fields=['use_cols']) -> bool:
@@ -110,7 +88,7 @@ class FileWriter(_BaseFileHandler):
     }
 
     @staticmethod
-    @FileValidator.check_exists(exists=False, allow_overwrite=False)
+    @check_exists(exists=False, allow_overwrite=False)
     def skops(
         filepath: Path,
         skops_artifact: SkopsArtifact,
@@ -127,7 +105,7 @@ class FileWriter(_BaseFileHandler):
                 overwrite=overwrite)
 
     @staticmethod
-    @FileValidator.check_exists(exists=False, allow_overwrite=False)
+    @check_exists(exists=False, allow_overwrite=False)
     def metadata(filepath: Path, metadata: Dict, overwrite: bool = False) -> None:
         meta_path: Path = filepath.with_suffix('.meta.json')
         FileWriter.json(meta_path, content=metadata, overwrite=overwrite)
@@ -135,7 +113,7 @@ class FileWriter(_BaseFileHandler):
             filepath, "metadata", "overwritten" if overwrite else "saved")
 
     @staticmethod
-    @FileValidator.check_exists(exists=False, allow_overwrite=False)
+    @check_exists(exists=False, allow_overwrite=False)
     def yaml(filepath: Path, content: Dict, overwrite: bool = False) -> None:
         with open(filepath, "w", encoding="utf-8") as f:
             yaml.dump(content, f, default_flow_style=False,
@@ -144,7 +122,7 @@ class FileWriter(_BaseFileHandler):
             filepath, "yaml", "overwritten" if overwrite else "saved")
 
     @staticmethod
-    @FileValidator.check_exists(exists=False, allow_overwrite=False)
+    @check_exists(exists=False, allow_overwrite=False)
     def json(filepath: Path, content: Dict[str, Any], overwrite: bool = False, indent: int = 2) -> None:
         with filepath.open("w", encoding="utf-8") as f:
             json.dump(content, f, ensure_ascii=False, indent=indent)
@@ -156,7 +134,7 @@ class FileReader(_BaseFileHandler):
     """Handles file reading operations with type hints."""
 
     @staticmethod
-    @FileValidator.check_exists(exists=True)
+    @check_exists(exists=True)
     def skops(filepath: Path, metadata_config: Optional[Dict]) -> SkopsArtifact:
         obj: SkopsObjectType = sio.load(filepath)
         metadata_loaded: Optional[Dict] = FileReader.metadata(filepath)
@@ -178,7 +156,7 @@ class FileReader(_BaseFileHandler):
         return skops_artifact
 
     @staticmethod
-    @FileValidator.check_exists(exists=True)
+    @check_exists(exists=True)
     def metadata(filepath: Path) -> Optional[Dict]:
         meta_path: Path = filepath.with_suffix('.meta.json')
         try:
@@ -187,7 +165,7 @@ class FileReader(_BaseFileHandler):
             return None
 
     @staticmethod
-    @FileValidator.check_exists(exists=True)
+    @check_exists(exists=True)
     def yaml(filepath: Path) -> Dict:
         with open(filepath, 'r', encoding='utf-8') as f:
             content: Dict = yaml.safe_load(f)
@@ -195,7 +173,7 @@ class FileReader(_BaseFileHandler):
             return content
 
     @staticmethod
-    @FileValidator.check_exists(exists=True)
+    @check_exists(exists=True)
     def json(filepath: Path) -> Dict:
         with filepath.open("r", encoding="utf-8") as f:
             content: Dict = json.load(f)

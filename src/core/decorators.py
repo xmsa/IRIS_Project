@@ -1,6 +1,7 @@
 
 from functools import wraps
-from typing import Any, Callable, Dict, Type
+from pathlib import Path
+from typing import Any, Callable, Dict, Type, Union
 
 import numpy as np
 from numpy import ndarray
@@ -63,5 +64,27 @@ def ensure_dependencies(deps: Dict[str, Type]) -> Callable:
                 if getattr(self, attr_name, None) is None:
                     setattr(self, attr_name, class_type())
             return func(self, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def check_exists(exists: bool = True, allow_overwrite: bool = False) -> Callable:
+    """Decorator to validate file existence before operations."""
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(filepath: Union[str, Path], *args, **kwargs) -> Any:
+            path: Path = Path(filepath) if isinstance(
+                filepath, str) else filepath
+            overwrite = kwargs.get('overwrite', allow_overwrite)
+
+            if overwrite:
+                return func(path, *args, **kwargs)
+
+            if exists and not path.exists():
+                raise FileNotFoundError(f"File not found: {path}")
+            if not exists and path.exists():
+                raise FileExistsError(f"File already exists: {path}")
+
+            return func(path, *args, **kwargs)
         return wrapper
     return decorator
