@@ -126,7 +126,7 @@ class BaseTransformer:
     def _load_or_build(self) -> ProcessorType:
         """Load existing transformer or build a new one."""
         try:
-            obj = self._load()
+            obj: ProcessorType = self._load()
             self._is_fit = True
             app_logger.info(
                 f"Successfully loaded {self._type} from {self._artifact_source.value}")
@@ -144,7 +144,7 @@ class BaseTransformer:
         """Load transformer from artifact source."""
         if self._artifact_source == ArtifactSourceEnum.LOCAL:
             skops_artifact: SkopsArtifact = FileReader.skops(
-                self.configs.filepath, self.configs.metadata
+                self.configs.filepath, self.configs.metadata  # type: ignore
             )
             if isinstance(skops_artifact.obj, ProcessorType):
                 app_logger.debug(
@@ -175,7 +175,7 @@ class BaseTransformer:
                 metadata=self.configs.metadata
             )
             FileWriter.skops(
-                filepath=filepath,
+                filepath=filepath,  # type: ignore
                 skops_artifact=skops_artifact,
                 overwrite=True
             )
@@ -229,7 +229,7 @@ class BaseTransformer:
         try:
             self.fit(data)
         except RuntimeError as exc:
-            print(f"Error during fit: {exc}")
+            app_logger.warning(f"Warning during fit: {exc}")
         return self.transform(data)
 
     @require_fit(fitted=True)
